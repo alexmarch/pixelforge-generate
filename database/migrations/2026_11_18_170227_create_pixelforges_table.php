@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('image_url')->nullable();
             $table->timestamp('image_url_expires_at')->nullable();
             $table->timestamp('completed_at')->nullable();
-            $table->text('error')->nullable();
+            $table->json('error')->nullable();
         });
     }
 

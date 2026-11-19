@@ -200,7 +200,7 @@ class DashboardController extends Controller
         $generations = $user->pixelforge()
             ->where(function ($query) {
                 $query->where('image_url_expires_at', '>', now())
-                    ->orWhereIn('status', ['pending', 'queued', 'processing', 'completed', 'succeeded']);
+                    ->orWhereIn('status', ['pending', 'queued', 'processing', 'completed', 'succeeded', 'failed']);
             })
             ->orderBy('created_at', 'desc')
             ->get();

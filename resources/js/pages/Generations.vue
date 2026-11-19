@@ -48,8 +48,11 @@ const setupEchoListeners = () => {
 
     try {
         const userChannel = window.Echo.private(`user.${userId}`);
-        
-        userChannel.listen('GenerationStatusUpdate', (data: any) => {
+        const generationChannel = window.Echo.private(`user.${userId}.generations`);
+
+        console.log('Listening to channels:', `user.${userId}`, `user.${userId}.generations`);
+
+        generationChannel.listen('GenerationStatusUpdate', (data: any) => {
             const index = generations.value.findIndex((g: any) => g.id === data.id);
             if (index !== -1) {
                 generations.value[index] = { ...data };
@@ -57,6 +60,15 @@ const setupEchoListeners = () => {
                 generations.value.unshift({ ...data });
             }
         });
+        
+        // userChannel.listen('GenerationStatusUpdate', (data: any) => {
+        //     const index = generations.value.findIndex((g: any) => g.id === data.id);
+        //     if (index !== -1) {
+        //         generations.value[index] = { ...data };
+        //     } else {
+        //         generations.value.unshift({ ...data });
+        //     }
+        // });
 
         userChannel.listen('BalanceUpdate', (data: any) => {
             console.log('Balance update received:', data);

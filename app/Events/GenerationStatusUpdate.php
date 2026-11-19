@@ -26,8 +26,8 @@ class GenerationStatusUpdate implements ShouldBroadcastNow
     public function broadcastOn(): array
     {
         return [
-            new PrivateChannel('generation.'.$this->pixelforge->id),
-            new PrivateChannel('user.'.$this->pixelforge->user_id),
+            // new PrivateChannel('generation.'.$this->pixelforge->id),
+            new PrivateChannel('user.'.$this->pixelforge->user->id . '.generations'),
         ];
     }
 

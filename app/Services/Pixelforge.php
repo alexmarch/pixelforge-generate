@@ -100,6 +100,7 @@ class Pixelforge
             + $reasoningTokens * (float) ($rates['reasoning_tokens'] ?? 0)
         ) / 1_000_000;
 
+        // Markup 0.25
         $markup = (float) config('pixelforge.markup', 0);
 
         $this->cost = $cost * (1 + $markup);

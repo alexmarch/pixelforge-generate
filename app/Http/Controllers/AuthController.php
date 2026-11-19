@@ -41,10 +41,10 @@ class AuthController extends Controller
     public function buyDemoCredit(): JsonResponse {
         $user = Auth::user();
         if ($user) {
-            $user->wallet()->increment('balance', 5.0); // Add 5.0 demo credit
+            $user->wallet->increment('balance', 0.50);
             BalanceUpdate::dispatch($user);
         }
-        return response()->json(['message' => 'Demo credit added successfully.']);
+        return response()->json(['message' => 'Demo credit added successfully.', 'balance' => $user->wallet?->balance, 'formatted_balance' => $user->wallet?->formatted_balance]);
     }
     public function reset(){}
     public function logout(): RedirectResponse

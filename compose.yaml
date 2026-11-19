@@ -1,5 +1,5 @@
 services:
-    laravel.test:
+    pixelforge-generate.local:
         build:
             context: './vendor/laravel/sail/runtimes/8.5'
             dockerfile: Dockerfile
@@ -25,6 +25,30 @@ services:
         depends_on:
             - pgsql
             - redis
+    reverb:
+        image: 'sail-8.5/app'
+        entrypoint: ['php']
+        command: ['artisan', 'reverb:start', '--host=0.0.0.0', '--port=8080', '--debug']
+        volumes:
+            - '.:/var/www/html'
+        ports:
+            - '${REVERB_PORT:-8080}:8080'
+        depends_on:
+            - pixelforge-generate.local
+        networks:
+            - sail
+    queue:
+        image: sail-8.5/app
+        entrypoint: ['php']
+        command: ['artisan', 'queue:work', '--sleep=3', '--tries=3', '--timeout=90']
+        working_dir: /var/www/html
+        volumes:
+        - '.:/var/www/html'
+        depends_on:
+        - pixelforge-generate.local
+        - redis
+        networks:
+        - sail
     pgsql:
         image: 'postgres:18-alpine'
         ports:
@@ -51,7 +75,7 @@ services:
             retries: 3
             timeout: 5s
     redis:
-        image: 'redis:alpine'
+        image: 'redis:7.4-alpine'
         ports:
             - '${FORWARD_REDIS_PORT:-6379}:6379'
         volumes:

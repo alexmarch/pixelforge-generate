@@ -49,6 +49,10 @@ class Pixelforge implements ShouldBeUnique, ShouldQueue
                 'result' => $result,
             ]);
         } catch (\Throwable $e) {
+            Log::warning('PixelForge status check failed', [
+                'gen_id' => $this->pixelforge->gen_id,
+                'message' => $e->getMessage(),
+            ]);
             // Handle the exception, e.g., log it or update the status
             $this->pixelforge->update([
                 'status' => 'failed',
@@ -83,32 +87,43 @@ class Pixelforge implements ShouldBeUnique, ShouldQueue
                     ]);
                 }
             });
-
-            $this->pixelforge->refresh();
             
-            Log::info('Dispatching GenerationStatusUpdate event', [
+            Log::info('Dispatching GenerationStatusUpdate event ==>', [
                 'generation_id' => $this->pixelforge->id,
                 'user_id' => $this->pixelforge->user->id,
                 'channels' => ["generation.{$this->pixelforge->id}", "user.{$this->pixelforge->user->id}"],
             ]);
+
+            Log::info("Start broadcasting BalanceUpdate event for user {$this->pixelforge->user->id} on channel user.{$this->pixelforge->user->id}");
+
+            BalanceUpdate::dispatch($this->pixelforge->user);
+            
             GenerationStatusUpdate::dispatch($this->pixelforge);
             
-            Log::info('Dispatching BalanceUpdate event', [
-                'user_id' => $this->pixelforge->user->id,
-                'channel' => "user.{$this->pixelforge->user->id}",
-            ]);
-            BalanceUpdate::dispatch($this->pixelforge->user);
+            Log::info('Ending broadcast of BalanceUpdate event');
 
             return;
         }
 
         if ($result['status'] === 'failed') {
-            $this->pixelforge->update([
-                'status' => 'failed',
-                'error' => ['error' => $result['error'] ?? 'Generation failed'],
-            ]);
-            GenerationStatusUpdate::dispatch($this->pixelforge);
-
+            try {
+                $this->pixelforge->update([
+                    'status' => 'failed',
+                    'error' => $result['error']
+                ]);
+                $this->pixelforge->refresh();
+                Log::info('Dispatching BalanceUpdate event', [
+                    'status' => 'failed',
+                    'user_id' => $this->pixelforge->user->id,
+                    'channel' => "user.{$this->pixelforge->user->id}",
+                ]);
+                GenerationStatusUpdate::dispatch($this->pixelforge);
+            } catch (\Throwable $e) {
+                Log::error('Failed to update Pixelforge status to failed', [
+                    'gen_id' => $this->pixelforge->gen_id,
+                    'message' => $e->getMessage(),
+                ]);
+            }
             return;
         }
 

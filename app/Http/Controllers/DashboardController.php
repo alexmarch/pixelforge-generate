@@ -140,6 +140,40 @@ class DashboardController extends Controller
             'event' => $event,
         ]);
 
+        $gen_id = $event['id'] ?? null;
+        if (! $gen_id) {
+            Log::warning('Webhook event missing generation ID');
+
+            return response()->noContent();
+        }
+
+        $pixelforge = Pixelforge::where('gen_id', $gen_id)->first();
+        if (! $pixelforge) {
+            Log::warning('Pixelforge generation not found', ['gen_id' => $gen_id]);
+
+            return response()->noContent();
+        }
+
+        $status = $event['status'] ?? null;
+        if (! $status) {
+            Log::warning('Webhook event missing status', ['gen_id' => $gen_id]);
+
+            return response()->noContent();
+        }
+
+        $pixelforge->update([
+            'status' => $status,
+            'image_url' => $event['image_url'] ?? $pixelforge->image_url,
+            'image_url_expires_at' => $event['image_url_expires_at'] ?? $pixelforge->image_url_expires_at,
+            'completed_at' => $event['completed_at'] ?? ($status === 'succeeded' ? now() : $pixelforge->completed_at),
+            'error' => $event['error'] ?? ($status === 'failed' ? ['error' => 'Generation failed'] : $pixelforge->error),
+        ]);
+
+        Log::info('Pixelforge generation updated via webhook', [
+            'gen_id' => $gen_id,
+            'status' => $status,
+        ]);
+
         return response()->noContent();
     }
 

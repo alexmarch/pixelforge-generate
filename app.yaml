@@ -2,3 +2,21 @@ kind: wasmer.io/App.v0
 name: pixelforge-generate
 owner: alexmarch
 package: .
+scaling:
+  mode: single_concurrency
+database:
+  engine: postgres
+env:
+  APP_ENV: production
+  APP_DEBUG: "false"
+  APP_KEY: "=base64:MRKkZgTWybUd/ibDZ3FelFtxQcK6wBzYGOHDH8FCYEU="
+  APP_URL: "https://pixelforge-generate.wasmer.app"
+  
+  LOG_CHANNEL: stderr
+  VIEW_COMPILED_PATH: /tmp
+  
+  SESSION_DRIVER: database
+  CACHE_STORE: database
+  QUEUE_CONNECTION: database
+app_id: da_neGIvtaUgbJa
+

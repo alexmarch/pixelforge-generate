@@ -8,8 +8,8 @@ const page = usePage();
 <template>
     <main class="min-h-screen flex flex-col bg-zinc-950 text-white">
         <Navbar :auth="page.props.auth" />
-        <Sidebar :appName="page.props.name" />
-        <div class="w-full md:w-[calc(100%-16rem)] md:ml-64 p-5">
+        <Sidebar :auth="page.props.auth" :appName="page.props.name" />
+        <div :class="{ 'md:w-[calc(100%-16rem)] md:ml-64': page.props.auth?.user }" class="w-full p-5">
             <slot />
         </div>
     </main>

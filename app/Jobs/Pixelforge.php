@@ -27,7 +27,7 @@ class Pixelforge implements ShouldBeUnique, ShouldQueue
     public function __construct(
         protected ModelsPixelforge $pixelforge,
     ) {}
-
+    
     /**
      * Execute the job.
      *

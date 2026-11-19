@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, useHttp, usePage } from '@inertiajs/vue3';
 import { logout } from '@/routes/user';
 import { ref, onMounted, computed, watch } from 'vue';
 
@@ -14,7 +14,14 @@ const props = defineProps({
 })
 const page = usePage();
 const walletBalance = ref<any>(null);
-
+const http = useHttp();
+const buyDemoCredit = () => {
+    try {
+        http.post('/dashboard/buy-demo-credit')
+    } catch (error) {
+        console.error('Failed to buy demo credit:', error);
+    }
+};
 const wallet = computed(() => {
     if (walletBalance.value) {
         return walletBalance.value;
@@ -63,6 +70,9 @@ onMounted(() => {
                 </svg>
                 {{ wallet.formatted_balance || `$${wallet.balance}` }}
             </span>
+            <button @click="buyDemoCredit" class="btn-pill">
+                Buy
+            </button>
             <div class="flex items-center gap-2">
                 <div class="text-white inline-flex items-center gap-2">
                     <span class="hidden md:flex items-center">

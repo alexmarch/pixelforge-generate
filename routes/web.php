@@ -27,5 +27,6 @@ Route::middleware('auth:web')->group(function () {
         Route::post('/generate', [DashboardController::class, 'generate'])->name('dashboard.task')
             ->middleware([HandlePrecognitiveRequests::class]);
         Route::get('/generations', [DashboardController::class, 'generations'])->name('dashboard.generations');
+        Route::post('/buy-demo-credit', [AuthController::class, 'buyDemoCredit'])->name('user.buyDemoCredit');
     });
 });

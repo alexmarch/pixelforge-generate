@@ -2,11 +2,12 @@
 import { Link, } from '@inertiajs/vue3';
 import Logo from '@/shared/Logo.vue';
 const props = defineProps({
-    appName: String
+    appName: String,
+    auth: Object
 })
 </script>
 <template>
-    <aside class="hidden md:block md:w-64 bg-stone-900  border-r border-stone-800 fixed h-full top-0">
+    <aside v-if="props.auth?.user" class="hidden md:block md:w-64 bg-stone-900  border-r border-stone-800 fixed h-full top-0">
          <div class="p-4 flex items-center gap-2">
             <Logo />
              <h1 class="text-2xl flex items-center gap-2 col-span-1 text-white">

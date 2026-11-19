@@ -73,4 +73,10 @@ class User extends Authenticatable
         $this->wallet()->deductBalance($amount);
     }
 
+    public function isAdmin(): bool
+    {
+        // @TODO: Replace with proper admin check if needed
+        return $this->id === 1;
+    }
+
 }
